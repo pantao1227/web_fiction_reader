@@ -173,7 +173,10 @@ class WebFictionReader(QWidget):
         self.lb_state.setText('Loading...')
         QApplication.processEvents()
         try:
-            response =  request.urlopen(str_url, timeout=5)
+            headers = {
+                'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
+                }
+            response =  request.urlopen(request.Request(str_url, headers=headers), timeout=3)
         except error.URLError as err:
             self.lb_state.setText(str(err.reason))
             return
@@ -202,6 +205,8 @@ class WebFictionReader(QWidget):
             list_txt_t = sel.css('#htmlContent::text').extract()
         if list_txt_t == []:
             list_txt_t = sel.css('.content p::text').extract()
+        if list_txt_t == []:
+            list_txt_t = sel.css('#chapterContent::text').extract()
         list_txt = []
         for li in list_txt_t:
             t = li.strip()
@@ -211,6 +216,14 @@ class WebFictionReader(QWidget):
         self.te_main.setHtml(html_disp)
         relative_url_next = sel.xpath('.//a[text()="下一章"]/@href').extract_first()
         relative_url_prev = sel.xpath('.//a[text()="上一章"]/@href').extract_first()
+        if relative_url_next == None:
+            relative_url_next = sel.xpath('.//a[text()="下一章>>"]/@href').extract_first()
+        if relative_url_prev == None:
+            relative_url_prev = sel.css('.jump').xpath('./a[1]/@href').extract_first()  #cn35k.com
+        if relative_url_next == None:
+            relative_url_next = sel.xpath('.//a[text()="下一页"]/@href').extract_first()
+        if relative_url_prev == None:
+            relative_url_prev = sel.xpath('.//a[text()="上一页"]/@href').extract_first()
         self.str_crnt = str_url
         self.str_next = parse.urljoin(self.str_crnt, relative_url_next)
         self.str_prev = parse.urljoin(self.str_crnt, relative_url_prev)
