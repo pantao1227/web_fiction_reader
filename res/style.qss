@@ -2,7 +2,7 @@ QLineEdit {
     border: none;
     }
 QWidget {
-    /* background: #0F2540; */
+    background: #0F2540;
     color:#d1d1d1;
     }
 QTextEdit {

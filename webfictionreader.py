@@ -5,7 +5,7 @@ import base64
 from os import path
 from urllib import request, parse, error
 from scrapy import Selector
-from PySide2.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QLineEdit, QFrame, QDockWidget
+from PySide2.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QLineEdit, QFrame, QDockWidget, QMenu
 from PySide2.QtWebEngineWidgets import QWebEngineView
 from PySide2.QtCore import Qt, QUrl
 from PySide2.QtGui import QPixmap
@@ -97,42 +97,24 @@ class WebFictionReader(QWidget):
         self.layout_main.setSpacing(0)
         self.layout_panel.setContentsMargins(5, 0, 0, 2)
         self.layout_panel.setSpacing(0)
+        self.str_qss_default = """
+        QLineEdit {border: none;}
+        QWidget {background: #0F2540;color:#d1d1d1;}
+        QTextEdit {margin: 0px 5px 0px 5px;border :none;}
+        QScrollBar:vertical {border: none;background: #0f2540;width: 5px;}
+        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {color: #0f2540;background: #0f2540;}
+        QScrollBar::handle:vertical {border: none;background: #ccc;height: 8px;}
+        QScrollBar::sub-page, QScrollBar::add-page {background: #0f2540;}
+        """
         str_qss = ''
         with open(path.join(path.dirname(__file__), 'res', 'style.qss'), 'r') as qss_file:
             str_qss = qss_file.read()
         if str_qss == '':
-            self.setStyleSheet("""
-            QLineEdit {
-                border: none;
-                }
-            QWidget {
-                background: #0F2540;
-                color:#d1d1d1;
-                }
-            QTextEdit {
-                margin: 0px 5px 0px 5px;
-                border :none
-                }
-            QScrollBar:vertical {
-                border: none;
-                background: #0f2540;
-                width: 5px;
-                }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-                color: #0f2540;
-                background: #0f2540;
-            }
-            QScrollBar::handle:vertical {
-                border: none;
-                background: #ccc;
-                height: 8px;
-            }
-            QScrollBar::sub-page, QScrollBar::add-page {
-                background: #0f2540;
-            }
-            """)
+            self.setStyleSheet(self.str_qss_default)
         else:
             self.setStyleSheet(str_qss)
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.custom_right_menu)
         self.dw.hide()
 
         self.btn_prev.clicked.connect(self.btn_prev_clicked)
@@ -152,6 +134,19 @@ class WebFictionReader(QWidget):
                 self.le_url.setText(sys.argv[1])
                 self.btn_refresh_clicked()
 
+    def custom_right_menu(self, pos):
+        menu = QMenu()
+        opt1 = menu.addAction("Load Qss File")
+        action = menu.exec_(self.mapToGlobal(pos))
+        if action == opt1:
+            str_qss = ''
+            with open(path.join(path.dirname(__file__), 'res', 'style.qss'), 'r') as qss_file:
+                str_qss = qss_file.read()
+            if str_qss == '':
+                self.setStyleSheet(self.str_qss_default)
+            else:
+                self.setStyleSheet(str_qss)
+        return
 
     def to_html(self,list_t):
         # 读取style文件
