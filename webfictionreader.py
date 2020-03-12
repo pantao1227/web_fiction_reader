@@ -1,4 +1,5 @@
-#conding=utf-8
+# conding=utf-8
+#! python3
 import sys
 import zlib
 import base64
