@@ -1,0 +1,28 @@
+QLineEdit {
+    border: none;
+    }
+QWidget {
+    /* background: #0F2540; */
+    color:#d1d1d1;
+    }
+QTextEdit {
+    margin: 0px 5px 0px 5px;
+    border :none
+    }
+QScrollBar:vertical {
+    border: none;
+    background: #0f2540;
+    width: 5px;
+    }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    color: #0f2540;
+    background: #0f2540;
+    }
+QScrollBar::handle:vertical {
+    border: none;
+    background: #ccc;
+    height: 8px;
+    }
+QScrollBar::sub-page, QScrollBar::add-page {
+    background: #0f2540;
+    }

@@ -2,6 +2,7 @@
 import sys
 import zlib
 import base64
+from os import path
 from urllib import request, parse, error
 from scrapy import Selector
 from PySide2.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QLineEdit, QFrame, QDockWidget
@@ -96,36 +97,42 @@ class WebFictionReader(QWidget):
         self.layout_main.setSpacing(0)
         self.layout_panel.setContentsMargins(5, 0, 0, 2)
         self.layout_panel.setSpacing(0)
-        self.setStyleSheet("""
-        QLineEdit {
-            border: none;
+        str_qss = ''
+        with open(path.join(path.dirname(__file__), 'res', 'style.qss'), 'r') as qss_file:
+            str_qss = qss_file.read()
+        if str_qss == '':
+            self.setStyleSheet("""
+            QLineEdit {
+                border: none;
+                }
+            QWidget {
+                background: #0F2540;
+                color:#d1d1d1;
+                }
+            QTextEdit {
+                margin: 0px 5px 0px 5px;
+                border :none
+                }
+            QScrollBar:vertical {
+                border: none;
+                background: #0f2540;
+                width: 5px;
+                }
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+                color: #0f2540;
+                background: #0f2540;
             }
-        QWidget {
-            background: #0F2540;
-            color:#d1d1d1;
+            QScrollBar::handle:vertical {
+                border: none;
+                background: #ccc;
+                height: 8px;
             }
-        QTextEdit {
-            margin: 0px 5px 0px 5px;
-            border :none
+            QScrollBar::sub-page, QScrollBar::add-page {
+                background: #0f2540;
             }
-        QScrollBar:vertical {
-            border: none;
-            background: #0f2540;
-            width: 5px;
-            }
-        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-            color: #0f2540;
-            background: #0f2540;
-        }
-        QScrollBar::handle:vertical {
-            border: none;
-            background: #ccc;
-            height: 8px;
-        }
-        QScrollBar::sub-page, QScrollBar::add-page {
-            background: #0f2540;
-        }
-        """)
+            """)
+        else:
+            self.setStyleSheet(str_qss)
         self.dw.hide()
 
         self.btn_prev.clicked.connect(self.btn_prev_clicked)
@@ -147,12 +154,13 @@ class WebFictionReader(QWidget):
 
 
     def to_html(self,list_t):
-        list_x_html = ["""
-        <html>
-            <head>
-                <title>title</title>
-            </head>
-            <style>
+        # 读取style文件
+        str_css = ''
+        with open(path.join(path.dirname(__file__), 'res', 'style.css'), 'r') as css_file:
+            str_css = css_file.read()
+        # 默认样式
+        if str_css == '':
+            str_css = """
             html {
                 margin:0px;
                 padding:0px;
@@ -161,9 +169,18 @@ class WebFictionReader(QWidget):
                 font-size:22px;
                 line-height:150%;
             }
+            """
+        str_x_html = """
+        <html>
+            <head>
+                <title>title</title>
+            </head>
+            <style>
+            {}
             </style>
             <body>
-        """]
+        """.format(str_css)
+        list_x_html = [str_x_html]
         for i in list_t:
             list_x_html.append('<p>{}</p>\n'.format(i))
         list_x_html.append('</body></html>')

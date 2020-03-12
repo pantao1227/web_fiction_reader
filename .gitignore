@@ -5,3 +5,4 @@ dist/
 webfictionreader.spec
 book.ico
 clean.cmd
+deploy.cmd
