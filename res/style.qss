@@ -3,7 +3,7 @@ QLineEdit {
     }
 QWidget {
     background: #0F2540;
-    color:#d1d1d1;
+    color:#dadada;
     }
 QTextEdit {
     margin: 0px 5px 0px 5px;
@@ -20,7 +20,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
     }
 QScrollBar::handle:vertical {
     border: none;
-    background: #ccc;
+    background: #33cccccc;
     height: 8px;
     }
 QScrollBar::sub-page, QScrollBar::add-page {

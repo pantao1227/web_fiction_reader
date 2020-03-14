@@ -1,11 +1,12 @@
 /*
 This file is not recommended for color adjustment.
 */
-html {
+html, body {
     margin:0px;
     padding:0px;
 }
 p {
-    font-size:24px;
+    font-size:20px;
     line-height:150%;
+    margin: 25px 0px;
 }

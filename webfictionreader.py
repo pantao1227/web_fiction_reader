@@ -261,6 +261,7 @@ class WebFictionReader(QWidget):
             self.wev.load(QUrl(self.le_url.text()))
         else:
             self.load_page(self.le_url.text())
+            self.te_main.setFocus()
 
     def keyPressEvent(self, event):
         if(event.key() == 44):
