@@ -9,4 +9,9 @@ p {
     font-size:20px;
     line-height:150%;
     margin: 25px 0px;
+    font-family: FZJuZhenXinFangS\-R\-GB;
+/*
+fc-list | find "FZ"
+fc-list is provided by texlive.
+*/
 }
