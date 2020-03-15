@@ -3,7 +3,7 @@
 import sys
 import zlib
 import base64
-from os import path
+from os import path, system
 from urllib import request, parse, error
 from scrapy import Selector
 from PySide2.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QLineEdit, QFrame, QDockWidget, QMenu
@@ -71,8 +71,11 @@ class WebFictionReader(QWidget):
         self.lb_title = QLabel('init')
         self.lb_state = QLabel('init')
         self.btn_prev = QPushButton('前', self)
+        self.btn_prev.setFocusPolicy(Qt.NoFocus)
         self.btn_refresh = QPushButton('此', self)
+        self.btn_refresh.setFocusPolicy(Qt.NoFocus)
         self.btn_next = QPushButton('次', self)
+        self.btn_next.setFocusPolicy(Qt.NoFocus)
         # self.layout_main.addWidget(self.le_url)
         self.layout_main.addLayout(self.layout_nav)
         self.layout_main.addWidget(self.dw)
@@ -83,6 +86,10 @@ class WebFictionReader(QWidget):
         self.layout_main.addWidget(self.te_main)
         self.layout_main.addWidget(self.line_2)
         self.layout_main.addLayout(self.layout_panel)
+        self.line_3 = QFrame(self)
+        self.line_3.setFrameShape(QFrame.HLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
+        self.layout_main.addWidget(self.line_3)
         self.layout_panel.addWidget(self.lb_title)
         self.layout_panel.addStretch(1)
         self.layout_panel.addWidget(self.btn_prev)
@@ -91,12 +98,13 @@ class WebFictionReader(QWidget):
         self.layout_panel.addSpacing(10)
         self.layout_panel.addWidget(self.btn_next)
         self.setLayout(self.layout_main)
-        self.setGeometry(0, 0, 640, 960)
+        self.setGeometry(0, 0, 560, 960)
         self.setWindowTitle(u'Reader')
         self.setWindowIcon(icon)
+        # int left, int top, int right, int bottom
         self.layout_main.setContentsMargins(0, 0, 0, 0)
         self.layout_main.setSpacing(0)
-        self.layout_panel.setContentsMargins(5, 0, 0, 2)
+        self.layout_panel.setContentsMargins(5, 0, 5, 1)
         self.layout_panel.setSpacing(0)
         self.str_qss_default = """
         QLineEdit {border: none;}
@@ -137,7 +145,9 @@ class WebFictionReader(QWidget):
 
     def custom_right_menu(self, pos):
         menu = QMenu()
-        opt1 = menu.addAction("Load Qss File")
+        opt0 = menu.addAction('编辑 QSS')
+        opt1 = menu.addAction('加载 QSS')
+        opt3 = menu.addAction('编辑 CSS')
         action = menu.exec_(self.mapToGlobal(pos))
         if action == opt1:
             str_qss = ''
@@ -147,6 +157,10 @@ class WebFictionReader(QWidget):
                 self.setStyleSheet(self.str_qss_default)
             else:
                 self.setStyleSheet(str_qss)
+        elif action == opt0:
+            system('start notepad {}'.format(path.join(path.dirname(__file__), 'res', 'style.qss')))
+        elif action == opt3:
+            system('start notepad {}'.format(path.join(path.dirname(__file__), 'res', 'style.css')))
         return
 
     def to_html(self,list_t):
@@ -242,6 +256,7 @@ class WebFictionReader(QWidget):
         self.str_prev = parse.urljoin(self.str_crnt, relative_url_prev)
         self.lb_title.setText(sel.xpath('//h1/text()').extract_first().strip())
         self.lb_state.setText('Loaded.')
+        self.te_main.setFocus()
 
     def btn_prev_clicked(self):
         self.le_url.setText(self.str_prev)

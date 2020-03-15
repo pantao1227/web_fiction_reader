@@ -11,18 +11,26 @@ QTextEdit {
     }
 QScrollBar:vertical {
     border: none;
-    background: #0f2540;
-    width: 5px;
+    width: 10px;
     }
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-    color: #0f2540;
-    background: #0f2540;
+    background: #00000000; /*The button two two side is invisible.*/
     }
 QScrollBar::handle:vertical {
-    border: none;
+    border: 1px solid;
+    border-radius: 5px;
     background: #33cccccc;
-    height: 8px;
     }
 QScrollBar::sub-page, QScrollBar::add-page {
-    background: #0f2540;
+    background: #000F2540;
     }
+QPushButton {
+    width: 48px;
+    height: 16px;
+    border: none;
+    /* border-radius: 5px; */
+    background: #11000000;
+}
+QPushButton:hover {
+    background: #66000000;
+}
