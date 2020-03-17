@@ -1,6 +1,7 @@
 #! python3
 # -*- coding:utf-8 -*-
 # Author: jyroy
+# https://www.cnblogs.com/jyroy/p/9461317.html
 import sys
 
 from PyQt5.QtCore import QSize
