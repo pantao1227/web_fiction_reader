@@ -3,13 +3,17 @@
 import sys
 import zlib
 import base64
+import qtawesome as qta
 from os import path, system
 from urllib import request, parse, error
 from scrapy import Selector
-from PySide2.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QLineEdit, QFrame, QDockWidget, QMenu
-from PySide2.QtWebEngineWidgets import QWebEngineView
-from PySide2.QtCore import Qt, QUrl
-from PySide2.QtGui import QPixmap
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QLineEdit, QFrame, QDockWidget, QMenu, QSpacerItem, QSizePolicy
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtCore import Qt, QUrl, QPoint, QSize
+from PyQt5.QtGui import QPixmap, QColor, QIcon
+# 下面的引用来自 https://www.cnblogs.com/jyroy/p/9461317.html
+from jyroy_csdn import FramelessWindow
+from jyroy_csdn import StyleSheet
 
 class OnePageWebEngineView(QWebEngineView):
     def createWindow(self,QWebEnginePage_WebWindowType):
@@ -24,11 +28,18 @@ class WebFictionReader(QWidget):
     str_next = ''
     str_crnt = ''
 
-    def __init__(self):
-        QWidget.__init__(self)
+    def __init__(self, *args, **kwargs):
+        super(QWidget, self).__init__(*args, **kwargs)
+        self.setObjectName('main')
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        # self.setWindowFlags(Qt.CustomizeWindowHint)
+        self.setAttribute(Qt.WA_StyledBackground)
         self.layout_main = QVBoxLayout()
         self.layout_panel = QHBoxLayout()
         self.layout_nav = QHBoxLayout()
+        self.line_0 = QFrame(self)
+        self.line_0.setFrameShape(QFrame.HLine)
+        self.line_0.setFrameShadow(QFrame.Sunken)
         self.line_1 = QFrame(self)
         self.line_1.setFrameShape(QFrame.HLine)
         self.line_1.setFrameShadow(QFrame.Sunken)
@@ -69,14 +80,15 @@ class WebFictionReader(QWidget):
         self.te_main = QTextEdit('init',self)
         self.te_main.setReadOnly(True)
         self.lb_title = QLabel('init')
+        self.lb_title.setObjectName('lb_title')
         self.lb_state = QLabel('init')
-        self.btn_prev = QPushButton('前', self)
+        self.btn_prev = QPushButton(qta.icon('fa.arrow-left', color='#FFFFFF'), '', self)
         self.btn_prev.setFocusPolicy(Qt.NoFocus)
-        self.btn_refresh = QPushButton('此', self)
+        self.btn_refresh = QPushButton(qta.icon('fa.repeat', color='#FFFFFF'), '', self)
         self.btn_refresh.setFocusPolicy(Qt.NoFocus)
-        self.btn_next = QPushButton('次', self)
+        self.btn_next = QPushButton(qta.icon('fa.arrow-right', color='#FFFFFF'), '', self)
         self.btn_next.setFocusPolicy(Qt.NoFocus)
-        # self.layout_main.addWidget(self.le_url)
+        self.layout_main.addWidget(self.line_0)
         self.layout_main.addLayout(self.layout_nav)
         self.layout_main.addWidget(self.dw)
         self.layout_main.addWidget(self.line_1)
@@ -100,11 +112,11 @@ class WebFictionReader(QWidget):
         self.setLayout(self.layout_main)
         self.setGeometry(0, 0, 560, 960)
         self.setWindowTitle(u'Reader')
-        self.setWindowIcon(icon)
+        # self.setWindowIcon(icon)
         # int left, int top, int right, int bottom
         self.layout_main.setContentsMargins(0, 0, 0, 0)
         self.layout_main.setSpacing(0)
-        self.layout_panel.setContentsMargins(5, 0, 5, 1)
+        self.layout_panel.setContentsMargins(0, 0, 0, 0)
         self.layout_panel.setSpacing(0)
         self.str_qss_default = """
         QLineEdit {border: none;}
@@ -195,7 +207,8 @@ class WebFictionReader(QWidget):
             list_x_html.append('<p>{}</p>\n'.format(i))
         list_x_html.append('</body></html>')
         return ''.join(list_x_html)
-
+    def to_str(self,list_t):
+        return '\n'.join(list_t)
     def load_page(self, str_url):
         self.lb_state.setText('Loading...')
         QApplication.processEvents()
@@ -241,6 +254,7 @@ class WebFictionReader(QWidget):
                 list_txt.append(t)
         html_disp = self.to_html(list_txt)
         self.te_main.setHtml(html_disp)
+        # self.te_main.setText(self.to_str(list_txt))
         relative_url_next = sel.xpath('.//a[text()="下一章"]/@href').extract_first()
         relative_url_prev = sel.xpath('.//a[text()="上一章"]/@href').extract_first()
         if relative_url_next == None:
@@ -312,6 +326,17 @@ if __name__ == "__main__":
     img = base64.b64decode(img)
     icon = QPixmap()
     icon.loadFromData(img)
-    window = WebFictionReader()
-    window.show()
+    # dark(app)
+    # window = WebFictionReader()
+    # window.setWindowIcon(QIcon(icon))
+    # mw = ModernWindow(window)
+    # # mw.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
+    # mw.show()
+    app.setStyleSheet(StyleSheet)
+    win = FramelessWindow()
+    win.setWindowTitle(u' Reader')
+    win.setWindowIcon(QIcon(icon))
+    win.resize(QSize(600, 960))
+    win.setWidget(WebFictionReader(win))
+    win.show()
     sys.exit(app.exec_())

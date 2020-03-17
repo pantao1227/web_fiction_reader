@@ -2,15 +2,17 @@
 This file is not recommended for color adjustment.
 */
 html, body {
-    margin:0px;
-    padding:0px;
+    margin: 0px;
+    padding: 0px;
 }
 p {
-    font-size:20px;
-    line-height:150%;
+    margin: 0px 0px 20px 0px;
+    padding: 0px;
+    font-size: 18px;
+    line-height: 150%;
     font-family: FZJuZhenXinFangS\-R\-GB;
+}
 /*
 fc-list | find "FZ"
 fc-list is provided by texlive.
 */
-}

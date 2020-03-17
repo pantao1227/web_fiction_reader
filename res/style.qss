@@ -2,12 +2,16 @@ QLineEdit {
     border: none;
     }
 QWidget {
-    background: #0F2540;
+    background: #192a56;
     color:#dadada;
+    /* border: .5px solid;*/
+    /* border-radius: 5px;  */
     }
 QTextEdit {
-    margin: 0px 5px 0px 5px;
-    border :none
+    /*top, right, bottom, left*/
+    margin: 0px 0px 0px 5px;
+    padding: 0px 0px 0px 0px;
+    border: none;
     }
 QScrollBar:vertical {
     border: none;
@@ -32,5 +36,9 @@ QPushButton {
     background: #11000000;
 }
 QPushButton:hover {
-    background: #66000000;
+    background: #660A0A0A;
+}
+QLabel#lb_title {
+    margin-left: 5px;
+    color: #aaa;
 }
