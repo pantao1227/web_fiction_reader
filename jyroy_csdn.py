@@ -11,22 +11,22 @@ from PyQt5.QtGui import QFont, QEnterEvent, QPainter, QColor, QPen
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel,QSpacerItem, QSizePolicy, QPushButton
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QTextEdit
-# from LeftTabWidget import LeftTabWidget
 # 样式
 StyleSheet = """
 /*标题栏*/
 TitleBar {
-    background-color: #192a56;
+    background-color: #2f3640;
     color: #dadada;
 }
 /*最小化最大化关闭按钮通用默认背景*/
 #buttonMinimum,#buttonMaximum,#buttonClose {
     border: none;
-    background-color: #192a56;
+    color: #dfe4ea;
+    background-color: #2f3640;
 }
 /*悬停*/
 #buttonMinimum:hover,#buttonMaximum:hover {
-    background-color: #192a56;
+    background-color: #2f3640;
     color: white;
 }
 #buttonClose:hover {
@@ -40,9 +40,12 @@ TitleBar {
     color: white;
     background-color: Firebrick;
 }
-QWidget {
+QWidget#tbar {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
+    border-top: 1px solid #2f3640;
+    border-left: 1px solid #2f3640;
+    border-right: 1px solid #2f3640;
 }
 """
 
@@ -72,7 +75,7 @@ class TitleBar(QWidget):
         self.setPalette(palette)
         # 布局
         layout = QHBoxLayout(self, spacing=0)
-        layout.setContentsMargins(5, 0, 0, 0)
+        layout.setContentsMargins(5, 0, 5, 0)
         # 窗口图标
         self.iconLabel = QLabel(self)
 #         self.iconLabel.setScaledContents(True)
@@ -107,6 +110,10 @@ class TitleBar(QWidget):
         layout.addWidget(self.buttonClose)
         # 初始高度
         self.setHeight()
+        # 标题栏按钮没必要获取焦点，以便用键盘操作其它控件。由pt27@live.cn添加
+        self.buttonMaximum.setFocusPolicy(Qt.NoFocus)
+        self.buttonMinimum.setFocusPolicy(Qt.NoFocus)
+        self.buttonClose.setFocusPolicy(Qt.NoFocus)
 
     def showMaximized(self):
         if self.buttonMaximum.text() == '1':
@@ -191,6 +198,7 @@ class FramelessWindow(QWidget):
             self.Margins, self.Margins, self.Margins, self.Margins)
         # 标题栏
         self.titleBar = TitleBar(self)
+        self.titleBar.setObjectName('tbar')
         layout.addWidget(self.titleBar)
         # 信号槽
         self.titleBar.windowMinimumed.connect(self.showMinimized)
@@ -372,26 +380,3 @@ class FramelessWindow(QWidget):
             else:
                 return
         self.setGeometry(x, y, w, h)
-
-# class MainWindow(QWidget):
-
-#     def __init__(self, *args, **kwargs):
-#         super(MainWindow, self).__init__(*args, **kwargs)
-#         layout = QVBoxLayout(self, spacing=0)
-#         layout.setContentsMargins(0, 0, 0, 0)
-        
-#         self.left_tag = LeftTabWidget()
-#         layout.addWidget(self.left_tag)
-
-
-# if __name__ == '__main__':
-
-#     app = QApplication(sys.argv)
-#     app.setStyleSheet(StyleSheet)
-#     mainWnd = FramelessWindow()
-#     mainWnd.setWindowTitle('测试标题栏')
-#     mainWnd.setWindowIcon(QIcon('Qt.ico'))
-#     mainWnd.resize(QSize(1250,780))
-#     mainWnd.setWidget(MainWindow(mainWnd))  # 把自己的窗口添加进来
-#     mainWnd.show()
-#     sys.exit(app.exec_())

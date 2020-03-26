@@ -2,14 +2,19 @@ QLineEdit {
     border: none;
     }
 QWidget {
-    background: #192a56;
-    color:#dadada;
-    /* border: .5px solid;*/
-    /* border-radius: 5px;  */
+    background: #ced6e0;
+    color: #2f3542;
+    /*background: #2f3542;
+    color: #dfe4ea;*/
     }
+QWidget#main {
+    border-left: 1px solid #2f3640;
+    border-bottom: 1px solid #2f3640;
+    border-right: 1px solid #2f3640;
+}
 QTextEdit {
     /*top, right, bottom, left*/
-    margin: 0px 0px 0px 5px;
+    margin: 0px 0px 0px 0px;
     padding: 0px 0px 0px 0px;
     border: none;
     }
@@ -22,8 +27,9 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
     }
 QScrollBar::handle:vertical {
     border: 1px solid;
-    border-radius: 5px;
+    border-radius: 3px;
     background: #33cccccc;
+    margin: 1px;
     }
 QScrollBar::sub-page, QScrollBar::add-page {
     background: #000F2540;
@@ -32,7 +38,6 @@ QPushButton {
     width: 48px;
     height: 16px;
     border: none;
-    /* border-radius: 5px; */
     background: #11000000;
 }
 QPushButton:hover {
@@ -41,4 +46,20 @@ QPushButton:hover {
 QLabel#lb_title {
     margin-left: 5px;
     color: #aaa;
+}
+/*Qmenu Style Sheets*/
+QMenu {
+    background-color: #2f3542;
+    border-radius: 3px;
+    margin: 5px 2px;
+}
+ 
+QMenu::item {
+    background-color: transparent;
+    padding:2px 16px; /*设置菜单项文字上下和左右的内边距，效果就是菜单中的条目左右上下有了间隔 */
+    margin:0px;/*设置菜单项的外边距*/
+}
+ 
+QMenu::item:selected { /* when user selects item using mouse or keyboard */
+    background-color: #2dabf9;/*这一句是设置菜单项鼠标经过选中的样式*/
 }

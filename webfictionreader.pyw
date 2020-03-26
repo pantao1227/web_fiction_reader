@@ -7,9 +7,9 @@ import qtawesome as qta
 from os import path, system
 from urllib import request, parse, error
 from scrapy import Selector
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QLineEdit, QFrame, QDockWidget, QMenu, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QLineEdit, QFrame, QDockWidget, QMenu, QSpacerItem, QSizePolicy, QMessageBox
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import Qt, QUrl, QPoint, QSize
+from PyQt5.QtCore import Qt, QUrl, QPoint, QSize, pyqtSignal
 from PyQt5.QtGui import QPixmap, QColor, QIcon
 # 下面的引用来自 https://www.cnblogs.com/jyroy/p/9461317.html
 from jyroy_csdn import FramelessWindow
@@ -27,11 +27,14 @@ class WebFictionReader(QWidget):
     str_prev = ''
     str_next = ''
     str_crnt = ''
-
+    str_prev_bak = ''
+    str_next_bak = ''
+    str_crnt_bak = ''
+    styleChanged = pyqtSignal() 
     def __init__(self, *args, **kwargs):
         super(QWidget, self).__init__(*args, **kwargs)
         self.setObjectName('main')
-        self.setWindowFlags(Qt.FramelessWindowHint)
+        # self.setWindowFlags(Qt.FramelessWindowHint)
         # self.setWindowFlags(Qt.CustomizeWindowHint)
         self.setAttribute(Qt.WA_StyledBackground)
         self.layout_main = QVBoxLayout()
@@ -43,6 +46,8 @@ class WebFictionReader(QWidget):
         self.line_1 = QFrame(self)
         self.line_1.setFrameShape(QFrame.HLine)
         self.line_1.setFrameShadow(QFrame.Sunken)
+        self.btn_back = QPushButton('Click to previous state.', self)
+        self.btn_back.hide()
 
         self.wev = OnePageWebEngineView(self)
         self.wev.setZoomFactor(0.8)
@@ -82,14 +87,19 @@ class WebFictionReader(QWidget):
         self.lb_title = QLabel('init')
         self.lb_title.setObjectName('lb_title')
         self.lb_state = QLabel('init')
-        self.btn_prev = QPushButton(qta.icon('fa.arrow-left', color='#FFFFFF'), '', self)
+        self.btn_prev = QPushButton(qta.icon('fa.arrow-left', color='#aaa'), '', self)
         self.btn_prev.setFocusPolicy(Qt.NoFocus)
-        self.btn_refresh = QPushButton(qta.icon('fa.repeat', color='#FFFFFF'), '', self)
+        self.btn_refresh = QPushButton(qta.icon('fa.repeat', color='#aaa'), '', self)
         self.btn_refresh.setFocusPolicy(Qt.NoFocus)
-        self.btn_next = QPushButton(qta.icon('fa.arrow-right', color='#FFFFFF'), '', self)
+        self.btn_next = QPushButton(qta.icon('fa.arrow-right', color='#aaa'), '', self)
         self.btn_next.setFocusPolicy(Qt.NoFocus)
         self.layout_main.addWidget(self.line_0)
-        self.layout_main.addLayout(self.layout_nav)
+        wdt_nav = QWidget()
+        wdt_nav.setContentsMargins(0, 0, 0, 0)
+        self.layout_nav.setContentsMargins(0, 0, 0, 0)
+        wdt_nav.setLayout(self.layout_nav)
+        # self.layout_main.addLayout(self.layout_nav)
+        self.layout_main.addWidget(wdt_nav)
         self.layout_main.addWidget(self.dw)
         self.layout_main.addWidget(self.line_1)
         self.layout_nav.addWidget(self.le_url)
@@ -97,11 +107,16 @@ class WebFictionReader(QWidget):
         self.layout_nav.addWidget(self.lb_state)
         self.layout_main.addWidget(self.te_main)
         self.layout_main.addWidget(self.line_2)
-        self.layout_main.addLayout(self.layout_panel)
-        self.line_3 = QFrame(self)
-        self.line_3.setFrameShape(QFrame.HLine)
-        self.line_3.setFrameShadow(QFrame.Sunken)
-        self.layout_main.addWidget(self.line_3)
+        # self.layout_main.addLayout(self.layout_panel)
+        wdt_pannel = QWidget()
+        wdt_pannel.setLayout(self.layout_panel)
+        wdt_pannel.setContentsMargins(0, 0, 0, 0)
+        self.layout_panel.setContentsMargins(0, 0, 0, 0)
+        self.layout_main.addWidget(wdt_pannel)
+        # self.line_3 = QFrame(self)
+        # self.line_3.setFrameShape(QFrame.HLine)
+        # self.line_3.setFrameShadow(QFrame.Sunken)
+        # self.layout_main.addWidget(self.line_3)
         self.layout_panel.addWidget(self.lb_title)
         self.layout_panel.addStretch(1)
         self.layout_panel.addWidget(self.btn_prev)
@@ -109,15 +124,15 @@ class WebFictionReader(QWidget):
         self.layout_panel.addWidget(self.btn_refresh)
         self.layout_panel.addSpacing(10)
         self.layout_panel.addWidget(self.btn_next)
+        self.layout_panel.addSpacing(5)
         self.setLayout(self.layout_main)
         self.setGeometry(0, 0, 560, 960)
         self.setWindowTitle(u'Reader')
         # self.setWindowIcon(icon)
         # int left, int top, int right, int bottom
+        self.setContentsMargins(1, 1, 1, 3)
         self.layout_main.setContentsMargins(0, 0, 0, 0)
         self.layout_main.setSpacing(0)
-        self.layout_panel.setContentsMargins(0, 0, 0, 0)
-        self.layout_panel.setSpacing(0)
         self.str_qss_default = """
         QLineEdit {border: none;}
         QWidget {background: #0F2540;color:#d1d1d1;}
@@ -128,7 +143,7 @@ class WebFictionReader(QWidget):
         QScrollBar::sub-page, QScrollBar::add-page {background: #0f2540;}
         """
         str_qss = ''
-        with open(path.join(path.dirname(__file__), 'res', 'style.qss'), 'r') as qss_file:
+        with open(path.join(path.dirname(__file__), 'res', 'style.qss'), 'r', encoding='utf-8') as qss_file:
             str_qss = qss_file.read()
         if str_qss == '':
             self.setStyleSheet(self.str_qss_default)
@@ -146,6 +161,7 @@ class WebFictionReader(QWidget):
         self.wev.urlChanged.connect(self.wev_url_changed)
         self.btn_dw_baidu.clicked.connect(self.btn_dw_baidu_clicked)
         self.le_dw_search.returnPressed.connect(self.le_dw_search_returnPressed)
+        self.btn_back.clicked.connect(self.back)
 
         self.btn_refresh.setFocus()
         # Command argv
@@ -155,15 +171,34 @@ class WebFictionReader(QWidget):
                 self.le_url.setText(sys.argv[1])
                 self.btn_refresh_clicked()
 
+    def load_failed(self):
+        self.btn_back.resize(200, 20)
+        self.btn_back.move(
+            int(self.width() / 2 - self.btn_back.width() / 2),
+            int(self.height() / 2 - self.btn_back.height() /2)
+        )
+        self.btn_back.show()
+        self.btn_back.raise_()
+
+    def back(self):
+        self.str_crnt = self.str_crnt_bak
+        self.str_prev = self.str_prev_bak
+        self.str_next = self.str_next_bak
+        self.le_url.setText(self.str_crnt)
+        # 依次赋值真麻烦，如果操作再多点，考虑封装成一个Class
+        self.btn_back.hide()
+
     def custom_right_menu(self, pos):
-        menu = QMenu()
+        menu = QMenu(self)
         opt0 = menu.addAction('编辑 QSS')
+        menu.addSeparator()
         opt1 = menu.addAction('加载 QSS')
+        menu.addSeparator()
         opt3 = menu.addAction('编辑 CSS')
         action = menu.exec_(self.mapToGlobal(pos))
         if action == opt1:
             str_qss = ''
-            with open(path.join(path.dirname(__file__), 'res', 'style.qss'), 'r') as qss_file:
+            with open(path.join(path.dirname(__file__), 'res', 'style.qss'), 'r', encoding='utf-8') as qss_file:
                 str_qss = qss_file.read()
             if str_qss == '':
                 self.setStyleSheet(self.str_qss_default)
@@ -178,7 +213,7 @@ class WebFictionReader(QWidget):
     def to_html(self,list_t):
         # 读取style文件
         str_css = ''
-        with open(path.join(path.dirname(__file__), 'res', 'style.css'), 'r') as css_file:
+        with open(path.join(path.dirname(__file__), 'res', 'style.css'), 'r', encoding='utf-8') as css_file:
             str_css = css_file.read()
         # 默认样式
         if str_css == '':
@@ -190,7 +225,7 @@ class WebFictionReader(QWidget):
             p {
                 font-size:22px;
                 line-height:150%;
-            }
+           }
             """
         str_x_html = """
         <html>
@@ -216,11 +251,26 @@ class WebFictionReader(QWidget):
             headers = {
                 'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
                 }
-            response =  request.urlopen(request.Request(str_url, headers=headers), timeout=3)
+            sch = parse.urlparse(str_url).scheme
+            if sch == '':
+                self.lb_state.setText('Not a url')
+                self.load_failed()
+                return
+            try:
+                response =  request.urlopen(request.Request(str_url, headers=headers), timeout=3)
+            except Exception as e:
+                QMessageBox.information(self,'Exception', str(e))
+                self.back()
+                return
         except error.URLError as err:
             self.lb_state.setText(str(err.reason))
             return
-        ss = response.read()
+        try:
+            ss = response.read()
+        except Exception as e:
+            QMessageBox.information(self,'Exception', str(e))
+            self.back()
+            return
         try:
             html = ss.decode('utf=8')
         except:
@@ -247,6 +297,8 @@ class WebFictionReader(QWidget):
             list_txt_t = sel.css('.content p::text').extract()
         if list_txt_t == []:
             list_txt_t = sel.css('#chapterContent::text').extract()
+        if list_txt_t ==[]:
+            list_txt_t = sel.css('#content1::text').extract()
         list_txt = []
         for li in list_txt_t:
             t = li.strip()
@@ -265,10 +317,22 @@ class WebFictionReader(QWidget):
             relative_url_next = sel.xpath('.//a[text()="下一页"]/@href').extract_first()
         if relative_url_prev == None:
             relative_url_prev = sel.xpath('.//a[text()="上一页"]/@href').extract_first()
+        if relative_url_next == None or relative_url_prev == None:
+            self.load_failed()
+            return
         self.str_crnt = str_url
+        # backup
+        self.str_crnt_bak = self.str_crnt
         self.str_next = parse.urljoin(self.str_crnt, relative_url_next)
+        # backup
+        self.str_next_bak = self.str_next
         self.str_prev = parse.urljoin(self.str_crnt, relative_url_prev)
-        self.lb_title.setText(sel.xpath('//h1/text()').extract_first().strip())
+        # backup
+        self.str_prev_bak = self.str_prev
+        try:
+            self.lb_title.setText(sel.xpath('//h1/text()').extract_first().strip())
+        except:
+            self.lb_title.setText('Can not fetch the title.')
         self.lb_state.setText('Loaded.')
         self.te_main.setFocus()
 
@@ -334,6 +398,7 @@ if __name__ == "__main__":
     # mw.show()
     app.setStyleSheet(StyleSheet)
     win = FramelessWindow()
+    win.setObjectName('outer')
     win.setWindowTitle(u' Reader')
     win.setWindowIcon(QIcon(icon))
     win.resize(QSize(600, 960))

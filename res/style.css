@@ -1,16 +1,16 @@
 /*
 This file is not recommended for color adjustment.
 */
-html, body {
+* {
     margin: 0px;
     padding: 0px;
 }
 p {
     margin: 0px 0px 20px 0px;
     padding: 0px;
-    font-size: 18px;
+    font-size: 20px;
     line-height: 150%;
-    font-family: FZJuZhenXinFangS\-R\-GB;
+    font-family:  FZJuZhenXinFangS\-R\-GB, FZYanSongS\-R\-GB, FangSong;
 }
 /*
 fc-list | find "FZ"
