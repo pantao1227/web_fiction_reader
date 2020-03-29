@@ -124,7 +124,7 @@ class TitleBar(QWidget):
             self.buttonMaximum.setText('1')
             self.windowNormaled.emit()
 
-    def setHeight(self, height=24):
+    def setHeight(self, height=28):
         """设置标题栏高度"""
         self.setMinimumHeight(height)
         self.setMaximumHeight(height)
