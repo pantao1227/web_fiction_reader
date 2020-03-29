@@ -10,8 +10,9 @@ p {
     padding: 0px;
     font-size: 20px;
     line-height: 150%;
-    font-family:  FZJuZhenXinFangS\-R\-GB, FZYanSongS\-R\-GB, FangSong;
+    font-family: FZYanSongS\-R\-GB, STZhongsong;
 }
+
 /*
 fc-list | find "FZ"
 fc-list is provided by texlive.
