@@ -171,7 +171,7 @@ class WebFictionReader(QWidget):
                 self.le_url.setText(sys.argv[1])
                 self.btn_refresh_clicked()
 
-    def load_failed(self):
+    def resolve_exception_handler(self):
         self.btn_back.resize(200, 20)
         self.btn_back.move(
             int(self.width() / 2 - self.btn_back.width() / 2),
@@ -179,6 +179,7 @@ class WebFictionReader(QWidget):
         )
         self.btn_back.show()
         self.btn_back.raise_()
+        self.lb_state.setText('Load failed.')
 
     def back(self):
         self.str_crnt = self.str_crnt_bak
@@ -187,6 +188,7 @@ class WebFictionReader(QWidget):
         self.le_url.setText(self.str_crnt)
         # 依次赋值真麻烦，如果操作再多点，考虑封装成一个Class
         self.btn_back.hide()
+        self.lb_state.setText('Need to refresh.')
 
     def custom_right_menu(self, pos):
         menu = QMenu(self)
@@ -254,7 +256,7 @@ class WebFictionReader(QWidget):
             sch = parse.urlparse(str_url).scheme
             if sch == '':
                 self.lb_state.setText('Not a url')
-                self.load_failed()
+                self.resolve_exception_handler()
                 return
             try:
                 response =  request.urlopen(request.Request(str_url, headers=headers), timeout=3)
@@ -318,7 +320,7 @@ class WebFictionReader(QWidget):
         if relative_url_prev == None:
             relative_url_prev = sel.xpath('.//a[text()="上一页"]/@href').extract_first()
         if relative_url_next == None or relative_url_prev == None:
-            self.load_failed()
+            self.resolve_exception_handler()
             return
         self.str_crnt = str_url
         # backup
