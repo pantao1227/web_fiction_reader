@@ -310,9 +310,9 @@ class WebFictionReader(QWidget):
         relative_url_next = sel.xpath('.//a[text()="下一章"]/@href').extract_first()
         relative_url_prev = sel.xpath('.//a[text()="上一章"]/@href').extract_first()
         if relative_url_next == None:
-            relative_url_next = sel.xpath('.//a[text()="下一章>>"]/@href').extract_first()
+            relative_url_next = sel.xpath('//a[text()="下一章>>"]/@href').extract_first()
         if relative_url_prev == None:
-            relative_url_prev = sel.css('.jump').xpath('./a[1]/@href').extract_first()  #cn35k.com
+            relative_url_prev = sel.xpath('//a[text()="<<上一章"]/@href').extract_first()   # 某些网站例如 www.zhuaji.org
         if relative_url_next == None:
             relative_url_next = sel.xpath('.//a[text()="下一页"]/@href').extract_first()
         if relative_url_prev == None:
